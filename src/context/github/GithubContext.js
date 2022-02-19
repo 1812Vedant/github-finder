@@ -11,12 +11,13 @@ export const GithubProvider = ({ children }) => {
   // const [loading, setLoading] = useState(true);
   const initialState = {
     users: [],
-    loading: true,
+    loading: false,
   };
-
   const [state, dispatch] = useReducer(GithubReducer, initialState);
 
+  //Get initial users (testing purpose)
   const fetchUsers = async function () {
+    setLoading();
     const response = await fetch(`https://api.github.com/users`, {
       headers: {
         Authorization: `token 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`,
@@ -30,6 +31,11 @@ export const GithubProvider = ({ children }) => {
       payload: data,
     });
   };
+  //dispatch is updating that state
+  //so we have to pass in the component where we are using that
+
+  //Set Loading
+  const setLoading = () => dispatch({ type: "SET_LOADING" });
 
   return (
     <GithubContext.Provider
