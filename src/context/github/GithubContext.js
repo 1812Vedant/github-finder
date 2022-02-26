@@ -12,6 +12,7 @@ export const GithubProvider = ({ children }) => {
   const initialState = {
     user: {},
     users: [],
+    repos: [],
     loading: false,
   };
   const [state, dispatch] = useReducer(GithubReducer, initialState);
@@ -63,6 +64,29 @@ export const GithubProvider = ({ children }) => {
     }
   };
 
+  //Get user repos
+  const getUserRepos = async function (login) {
+    setLoading();
+
+    const params = new URLSearchParams({ sort: "created", per_page: 10 });
+
+    const response = await fetch(
+      `https://api.github.com/users/${login}/repos?${params}`,
+      {
+        headers: {
+          Authorization: `token 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`,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    dispatch({
+      type: "GET_REPOS",
+      payload: data,
+    });
+  };
+
   //Set Loading
   const setLoading = () => dispatch({ type: "SET_LOADING" });
 
@@ -77,9 +101,11 @@ export const GithubProvider = ({ children }) => {
         user: state.user,
         users: state.users,
         loading: state.loading,
+        repos: state.repos,
         searchUsers,
         clearUsers,
         getUser,
+        getUserRepos,
       }}
     >
       {children}
