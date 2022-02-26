@@ -10,6 +10,7 @@ export const GithubProvider = ({ children }) => {
   // const [users, setUsers] = useState([]);
   // const [loading, setLoading] = useState(true);
   const initialState = {
+    user: {},
     users: [],
     loading: false,
   };
@@ -40,6 +41,28 @@ export const GithubProvider = ({ children }) => {
   //dispatch is updating that state
   //so we have to pass in the component where we are using that
 
+  //Get single User
+  const getUser = async function (login) {
+    setLoading();
+
+    const response = await fetch(`https://api.github.com/users/${login}`, {
+      headers: {
+        Authorization: `token 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`,
+      },
+    });
+
+    if (response.status === 404) {
+      window.location = "/notfound";
+    } else {
+      const data = await response.json();
+      //dispatch instead of setUsers,setLoading
+      dispatch({
+        type: "GET_USER",
+        payload: data,
+      });
+    }
+  };
+
   //Set Loading
   const setLoading = () => dispatch({ type: "SET_LOADING" });
 
@@ -51,10 +74,12 @@ export const GithubProvider = ({ children }) => {
   return (
     <GithubContext.Provider
       value={{
+        user: state.user,
         users: state.users,
         loading: state.loading,
         searchUsers,
         clearUsers,
+        getUser,
       }}
     >
       {children}
